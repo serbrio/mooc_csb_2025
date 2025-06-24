@@ -6,6 +6,8 @@ from django.views import generic
 
 from .models import Choice, Question
 
+import sqlite3
+
 
 # Create your views here.
 class IndexView(generic.ListView):
@@ -27,8 +29,15 @@ class ResultsView(generic.DetailView):
     template_name = "polls/results.html"
 
 
-def shmindex(request):
-    return HttpResponse("You are at polls shmindex.")
+def shmindex(request, question_id):
+    sql_statement = "SELECT question_text FROM polls_question WHERE id='" + question_id + "'"
+    print(sql_statement)
+    con = sqlite3.connect("db.sqlite3")
+    cur = con.cursor()
+    print(cur.description)
+    res = cur.execute(sql_statement)
+    
+    return HttpResponse(f"You are at polls shmindex. {res.fetchall()}")
 
 
 def vote(request, question_id):
