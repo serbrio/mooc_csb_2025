@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Web SMS</title>
+    </head>
+
+    <style>
+        table, th, td {
+            border:1px solid black;
+        }
+    </style>
+
+
+    <body>
+		<h1>Web Short Message Service</h1>
+
+        <table>
+		<tr>
+		<th style="text-align:left">Username: <td>{{user.username}} 
+		<tr>
+		<th style="text-align:left">Balance:  <td>{{user.account.balance}}
+		</table>
+
+        <br>
+
+        <form action='logout/' method="POST">
+         {% csrf_token %}
+            <input type="submit" value="Logout"/>
+        </form>
+		
+        <br>
+     
+        <h2>Send message</h2>
+
+        <form id='send_message' action='send_message/' method="POST">
+            {% csrf_token %}
+            <span>To:</span>
+
+            <select name="to">
+			{% for account in accounts %}
+                <option value="{{account.user.username}}">{{account.user.username}}</option>
+			{% endfor %}
+
+            </select><br/>
+            {{ form.as_p }}
+            <button type="submit">Send</button>
+        </form>
+
+        <h2>Received messages</h2>
+        {% if messages %}
+            <table style="width:100%">
+                <tr>
+                    <th>From</th>
+                    <th>Date</th>
+                    <th>Message</th>
+                </tr>
+
+                {% for msg in messages %}
+                <tr>
+                    <td>{{ msg.sender.user.username }}</td>
+                    <td>{{ msg.date }}</td>
+                    <td>{{ msg.text }}</td>
+                    <td>
+                        <form action='delete_message/' method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" id="message_id" name="message_id" value="{{ msg.id }}">
+                            <button type="submit">Delete</button></td>
+                        </form>
+                </tr>
+                {% endfor %}
+
+            </table>
+        {% else %}
+            <p>No messages.</p>
+        {% endif %}
+
+    </body>
+
+
+    </body>
+</html>
