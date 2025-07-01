@@ -5,7 +5,7 @@ Installation instructions:
 python manage.py migrate
 ```
 
-Short description of the web application\
+### Short description of the web application\
 After user have registered and logged in, app allows user:
 - to send messages to other users
 - to view messages received by the user
@@ -35,7 +35,7 @@ curl -X POST http://127.0.0.1:8000/web_sms/delete_message/ -H "Cookie: csrftoken
 ```
 As result, [message is deleted](screenshots/flaw-1-before-6.png).
 
-## Fix:
+## Fix
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/views.py#L70 (Line 70 in views.py)
 
 To fix the flaw, we need to check if the user who requested deletion has access to the message, i.e. if the user and the receiver of the message are the same person.
