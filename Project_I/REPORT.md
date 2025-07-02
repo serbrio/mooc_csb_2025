@@ -5,7 +5,7 @@ Installation instructions:
 python manage.py migrate
 ```
 
-### Short description of the web application\
+### Short description of the web application
 After user have registered and logged in, app allows user:
 - to send messages to other users
 - to view messages received by the user
