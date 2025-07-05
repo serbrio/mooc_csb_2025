@@ -8,7 +8,7 @@ class RegisterForm(forms.Form):
     username = forms.CharField(max_length=10)
     password = forms.CharField(widget = forms.PasswordInput, max_length=30)
     
-    #
+    """
     def clean(self):
         cleaned_data = super().clean()
         username = cleaned_data.get("username")
@@ -17,7 +17,7 @@ class RegisterForm(forms.Form):
     
         if username and password:
             password_validation.validate_password(password=password, user=user)
-    #
+    """
 
 
 class MessageForm(forms.Form):

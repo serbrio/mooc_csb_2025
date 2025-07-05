@@ -10,11 +10,11 @@ from django.utils import timezone
 class Account(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	balance = models.IntegerField()
-#
+	"""
 	@property
 	def password_validator_target(self):
 		return self.user.username
-#
+	"""
 	
 
 class Message(models.Model):
