@@ -14,7 +14,6 @@ After user have registered and logged in, app allows user:
 # FLAW 1:
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/views.py#L67 (Line 67 in views.py)
 
-[A Broken Access Control](https://owasp.org/Top10/A01_2021-Broken_Access_Control/)\
 There is no check in the application, if a user is authorized to delete a message.
 
 Though a user can not see in the web page messages addressed to other users, 
@@ -35,6 +34,8 @@ curl -X POST http://127.0.0.1:8000/web_sms/delete_message/ -H "Cookie: csrftoken
 ```
 As result, [message is deleted](screenshots/flaw-1-before-6.png).
 
+References: [A Broken Access Control](https://owasp.org/Top10/A01_2021-Broken_Access_Control/).
+
 ## Fix
 To fix the flaw, add check if the user who requested deletion has access to the message, i.e. if the user and the receiver of the message are the same person.
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/views.py#L70 (Line 70 in views.py)
@@ -48,7 +49,6 @@ Attempt failed: [message is not deleted](screenshots/flaw-1-after-2.png).
 # FLAW 2:
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/forms.py#L7 (Line 7 in forms.py)
 
-[Identification and Authentication Failures](https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/)\
 Application permits weak, or well-known passwords.
 
 User can be registered with a weak password, for example, [root/root](screenshots/flaw-2-before-1.png),
@@ -69,14 +69,15 @@ https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial
 
 Make UserAttributeSimilarityValidator to check property **password_validator_target** of the "Account" model:
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/mysite/settings.py#L94 (Line 94 in settings.py).\
-(Optionally: fine tune the **max_similarity** option of the validator.)
-Reference: [attribute_similarity_authentication_fails](https://www.reddit.com/r/django/comments/8tyhhe/attribute_similarity_authentication_fails/).
+Optionally: fine tune the **max_similarity** option of the validator.
 
 After fix, weak passwords (or credential pairs) are not accepted with the appropriate error messages:
 - [root/root](screenshots/flaw-2-after-1.png): too similar, too short, too common;
 - [password: 123123123](screenshots/flaw-2-after-2.png): too common, entirely numeric;
 - [test200/test123123](screenshots/flaw-2-after-3.png): too similar;
 - [test200/qwe](screenshots/flaw-2-after-4.png): too short, too common.
+
+References: [Identification and Authentication Failures](https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/), [password-management-in-django](https://docs.djangoproject.com/en/5.2/topics/auth/passwords/#password-management-in-django), [using-forms-to-validate-data](https://docs.djangoproject.com/en/5.2/ref/forms/api/#using-forms-to-validate-data), [Learn_web_development: Django](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Django), [attribute_similarity_authentication_fails](https://www.reddit.com/r/django/comments/8tyhhe/attribute_similarity_authentication_fails/).
 
 # FLAW 3:
 
