@@ -36,9 +36,8 @@ curl -X POST http://127.0.0.1:8000/web_sms/delete_message/ -H "Cookie: csrftoken
 As result, [message is deleted](screenshots/flaw-1-before-6.png).
 
 ## Fix
+To fix the flaw, add check if the user who requested deletion has access to the message, i.e. if the user and the receiver of the message are the same person.
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/views.py#L70 (Line 70 in views.py)
-
-To fix the flaw, we need to check if the user who requested deletion has access to the message, i.e. if the user and the receiver of the message are the same person.
 
 Attempt to delete message with ***id=23***:
 ```
@@ -47,5 +46,37 @@ curl -X POST http://127.0.0.1:8000/web_sms/delete_message/ -H "Cookie: csrftoken
 Attempt failed: [message is not deleted](screenshots/flaw-1-after-2.png).
 
 # FLAW 2:
+https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/forms.py#L7 (Line 7 in forms.py)
 
+[Identification and Authentication Failures](https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/)\
+Application permits weak, or well-known passwords.
 
+User can be registered with a weak password, for example, [root/root](screenshots/flaw-2-before-1.png),
+can successfully [login](screenshots/flaw-2-before-2.png) and [use](screenshots/flaw-2-before-3.png) application.
+
+## Fix
+To fix the flaw, add password validation to the registration form:
+https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/forms.py#L11 (Line 11 in forms.py).
+
+As there is custom "Account" model in the application, to make password validation work, add property **password_validator_target** to the model, which will be checked by validator:
+https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/models.py#L13 (Line 13 in models.py).
+
+In application, the following password validators are activated by default: 
+- UserAttributeSimilarityValidator
+- MinimumLengthValidator
+- CommonPasswordValidator
+- NumericPasswordValidator
+
+Make UserAttributeSimilarityValidator to check property **password_validator_target** of the "Account" model:
+https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/mysite/settings.py#L94 (Line 94 in settings.py).
+(Optionally: fine tune the **max_similarity** option of the validator.)
+
+After fix, weak passwords (or credential pairs) are not accepted with the appropriate error messages:
+- [root/root](screenshots/flaw-2-after-1.png): too similar, too short, too common;
+- [password: 123123123](screenshots/flaw-2-after-2.png): too common, entirely numeric;
+- [test200/test123123](screenshots/flaw-2-after-3.png): too similar;
+- [test200/qwe](screenshots/flaw-2-after-4.png): too short, too common.
+
+# FLAW 3:
+
+## Fix
