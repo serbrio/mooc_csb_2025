@@ -34,8 +34,6 @@ curl -X POST http://127.0.0.1:8000/web_sms/delete_message/ -H "Cookie: csrftoken
 ```
 As result, [message is deleted](screenshots/flaw-1-before-6.png).
 
-References: [A Broken Access Control](https://owasp.org/Top10/A01_2021-Broken_Access_Control/).
-
 ## Fix
 To fix the flaw, add check if the user who requested deletion has access to the message, i.e. if the user and the receiver of the message are the same person.
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/views.py#L70 (Line 70 in views.py)
@@ -45,6 +43,8 @@ Attempt to delete message with ***id=23***:
 curl -X POST http://127.0.0.1:8000/web_sms/delete_message/ -H "Cookie: csrftoken=F6OFlgxFYtrLu5GQGph2x910uIDR9xvN; sessionid=2wiig7eafg80eps326e8ngalvc6npdth" -d "csrfmiddlewaretoken=InINKoAEPdOJH5JUJJOyia9cYbZ5W3HFdjmiVuX9Dw5k10fAfYVqF902iJsMVq2i&message_id=23"
 ```
 Attempt failed: [message is not deleted](screenshots/flaw-1-after-2.png).
+
+References: [A Broken Access Control](https://owasp.org/Top10/A01_2021-Broken_Access_Control/).
 
 # FLAW 2:
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/forms.py#L7 (Line 7 in forms.py)
