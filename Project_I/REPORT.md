@@ -61,7 +61,7 @@ In application, the following password validators are activated by default:
 - CommonPasswordValidator
 - NumericPasswordValidator
 
-To fix the flaw, add password validation to the registration form:
+To fix the flaw, add password validation to the registration form, i.e. reimplement the clean() method of the form:
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/forms.py#L11 (Line 11 in forms.py).
 
 As there is custom "Account" model in the application, to make password validation work, add property **password_validator_target** to the model, which will be checked by validator:
@@ -77,7 +77,7 @@ After fix, weak passwords (or credential pairs) are not accepted with the approp
 - [test200/test123123](screenshots/flaw-2-after-3.png): too similar;
 - [test200/qwe](screenshots/flaw-2-after-4.png): too short, too common.
 
-References: [Identification and Authentication Failures](https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/), [password-management-in-django](https://docs.djangoproject.com/en/5.2/topics/auth/passwords/#password-management-in-django), [using-forms-to-validate-data](https://docs.djangoproject.com/en/5.2/ref/forms/api/#using-forms-to-validate-data), [Learn_web_development: Django](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Django), [attribute_similarity_authentication_fails](https://www.reddit.com/r/django/comments/8tyhhe/attribute_similarity_authentication_fails/).
+References: [Identification and Authentication Failures](https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/), [password-management-in-django](https://docs.djangoproject.com/en/5.2/topics/auth/passwords/#password-management-in-django), [using-forms-to-validate-data](https://docs.djangoproject.com/en/5.2/ref/forms/api/#using-forms-to-validate-data), [validating-fields-with-clean](https://docs.djangoproject.com/en/5.2/ref/forms/validation/#validating-fields-with-clean), [Learn_web_development: Django](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Django), [attribute_similarity_authentication_fails](https://www.reddit.com/r/django/comments/8tyhhe/attribute_similarity_authentication_fails/).
 
 # FLAW 3:
 

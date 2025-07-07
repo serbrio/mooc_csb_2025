@@ -66,8 +66,8 @@ def sendView(request):
 @transaction.atomic
 def delete_message(message_id, user):
     msg = Message.objects.get(id=message_id)
-    user_account = Account.objects.get(user=user)
     """
+    user_account = Account.objects.get(user=user)
     if msg.receiver != user_account:
         return
     """
