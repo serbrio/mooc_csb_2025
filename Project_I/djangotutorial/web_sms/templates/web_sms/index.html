@@ -59,13 +59,16 @@
                 <tr>
                     <td>{{ msg.sender.user.username }}</td>
                     <td>{{ msg.date }}</td>
-                    <td>{{ msg.text }}</td>
+                    <td>
+                        <a href='{% url "web_sms:read_message" msg.id %}'>Click to read</a>
+                    </td>
                     <td>
                         <form action='delete_message/' method="POST">
                             {% csrf_token %}
                             <input type="hidden" id="message_id" name="message_id" value="{{ msg.id }}">
-                            <button type="submit">Delete</button></td>
+                            <button type="submit">Delete</button>
                         </form>
+                    </td>
                 </tr>
                 {% endfor %}
 

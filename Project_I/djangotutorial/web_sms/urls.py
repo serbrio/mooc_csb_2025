@@ -13,4 +13,5 @@ urlpatterns = [
     #path("login/", LoginView.as_view(template_name="login.html")),
     path("logout/", LogoutView.as_view(next_page='/web_sms/')),
     path("delete_message/", views.deleteView),
+    path("<message_id>/read_message/", views.showMessageView, name="read_message"),
 ]

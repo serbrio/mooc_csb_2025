@@ -1,3 +1,5 @@
+import sqlite3
+
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -9,14 +11,43 @@ from .forms import RegisterForm, MessageForm
 from .models import Account, Message
 
 
-# Create your views here.
 @login_required
 def homePageView(request):
-    #messages = Message.objects.filter(receiver=request.user.id)
     messages = Message.objects.filter(receiver=Account.objects.get(user_id=request.user.id))
     accounts = Account.objects.exclude(user_id=request.user.id)
     msg_form = MessageForm()
     return render(request, "web_sms/index.html", {"messages": messages, "accounts": accounts, "form": msg_form})
+
+
+def showMessageView(request, message_id):
+
+    # Alternative fix
+    """
+    msg = Message.objects.get(id=message_id)
+    user = User.objects.get(id=request.user.id)
+    user_account = Account.objects.get(user=user)
+    if msg.receiver != user_account:
+        return HttpResponse("You have no read access to this message!..")
+    return HttpResponse(msg.text)
+    """
+
+    sql_statement = "SELECT text FROM web_sms_message WHERE id='" + message_id + "'"
+    # example of SQL injection: 
+    # http://127.0.0.1:8000/web_sms/' union all select text from web_sms_message;--/read_message/
+    
+    # Fix:
+    #sql_statement = "SELECT text FROM web_sms_message WHERE id=?"
+   
+    con = sqlite3.connect("db.sqlite3")
+    cur = con.cursor()
+
+    # the next line to be commented-out for the fix
+    res = cur.execute(sql_statement)
+
+    # Fix:
+    #res = cur.execute(sql_statement, (message_id,))
+
+    return HttpResponse(f"{res.fetchall()}")
 
 
 def registerView(request):
