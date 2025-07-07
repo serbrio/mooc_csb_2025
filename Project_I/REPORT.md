@@ -46,7 +46,8 @@ curl -X POST http://127.0.0.1:8000/web_sms/delete_message/ -H "Cookie: csrftoken
 ```
 Attempt failed: [message is not deleted](screenshots/flaw-1-after-2.png).
 
-## References: [A Broken Access Control](https://owasp.org/Top10/A01_2021-Broken_Access_Control/).
+## References: 
+[A Broken Access Control](https://owasp.org/Top10/A01_2021-Broken_Access_Control/).
 
 
 # FLAW 2:
@@ -81,7 +82,8 @@ After fix, weak passwords (or credential pairs) are not accepted with the approp
 - [test200/test123123](screenshots/flaw-2-after-3.png): too similar;
 - [test200/qwe](screenshots/flaw-2-after-4.png): too short, too common.
 
-## References: [Identification and Authentication Failures](https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/), [password-management-in-django](https://docs.djangoproject.com/en/5.2/topics/auth/passwords/#password-management-in-django), [using-forms-to-validate-data](https://docs.djangoproject.com/en/5.2/ref/forms/api/#using-forms-to-validate-data), [validating-fields-with-clean](https://docs.djangoproject.com/en/5.2/ref/forms/validation/#validating-fields-with-clean), [Learn_web_development: Django](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Django), [attribute_similarity_authentication_fails](https://www.reddit.com/r/django/comments/8tyhhe/attribute_similarity_authentication_fails/).
+## References: 
+[Identification and Authentication Failures](https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/), [password-management-in-django](https://docs.djangoproject.com/en/5.2/topics/auth/passwords/#password-management-in-django), [using-forms-to-validate-data](https://docs.djangoproject.com/en/5.2/ref/forms/api/#using-forms-to-validate-data), [validating-fields-with-clean](https://docs.djangoproject.com/en/5.2/ref/forms/validation/#validating-fields-with-clean), [Learn_web_development: Django](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Django), [attribute_similarity_authentication_fails](https://www.reddit.com/r/django/comments/8tyhhe/attribute_similarity_authentication_fails/).
 
 
 # FLAW 3:
@@ -109,7 +111,8 @@ https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial
 
 This fix prevents SQL injection [as well](screenshots/flaw-3-after-2.png). (By the way, it [remidies](screenshots/flaw-3-after-3.png) additionally a broken access control flaw in this piece of code: it checks if the user has access to read the message.)
 
-## References: [Injection](https://owasp.org/Top10/A03_2021-Injection/), [how-to-use-placeholders-to-bind-values-in-sql-queries](https://docs.python.org/3/library/sqlite3.html#how-to-use-placeholders-to-bind-values-in-sql-queries).
+## References: 
+[Injection](https://owasp.org/Top10/A03_2021-Injection/), [how-to-use-placeholders-to-bind-values-in-sql-queries](https://docs.python.org/3/library/sqlite3.html#how-to-use-placeholders-to-bind-values-in-sql-queries).
 
 # FLAW 4:
 
