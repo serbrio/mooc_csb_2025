@@ -91,10 +91,14 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        ## Fix Flaw 2
+        
         #"OPTIONS": {
         #    "max_similarity": 0.5,
         #    "user_attributes": ("username", "password_validator_target")
         #},
+
+        ## End Fix Flaw 2
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
@@ -129,3 +133,15 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+## Fix Flaw 4
+"""
+EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'example@gmail.com'
+EMAIL_HOST_PASSWORD = 'app_password' # NB! Not account password. See: https://myaccount.google.com/u/4/apppasswords
+"""
+## End Fix Flaw 4

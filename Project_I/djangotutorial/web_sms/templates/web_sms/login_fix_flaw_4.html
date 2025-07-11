@@ -12,10 +12,9 @@
 </form>
 
 <h2>Forgot password?</h2>
-<!-- Flaw 4 
-Template "login_fix_flaw_4.html" is used for the fix.-->
-
-<a href='{% url "web_sms:recover_password" %}'>Recover password</a>
+<!-- Fix Flaw 4 -->
 <p></p>
-
-<!-- End Flaw 4 -->
+<form id='alt_recover' action='/web_sms/password_reset/' method="GET">
+  <input type="submit" value="Recover password (fixed)"/>
+</form>
+<!-- End Fix Flaw 4 -->

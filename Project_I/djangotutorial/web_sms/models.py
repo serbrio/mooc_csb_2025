@@ -5,16 +5,18 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 
-# Create your models here.
-
 class Account(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	balance = models.IntegerField()
+	secret_question = models.CharField(max_length=100)
+	secret_answer = models.CharField(max_length=30)
+	## Fix Flaw 2
 	"""
 	@property
 	def password_validator_target(self):
 		return self.user.username
 	"""
+	## End Fix Flaw 2
 	
 
 class Message(models.Model):

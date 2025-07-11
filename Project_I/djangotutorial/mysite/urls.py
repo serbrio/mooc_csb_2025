@@ -17,14 +17,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView, PasswordResetView
 from web_sms.views import registerView
 
 urlpatterns = [
     path("web_sms/", include("web_sms.urls")),
     path("polls/", include("polls.urls")),
     path("admin/", admin.site.urls),
-    path("login/", LoginView.as_view(template_name="web_sms/login.html")),
-    #path("logout/", LogoutView.as_view(next_page='web_sms/')),
+    ## Fix Flaw 4
+    ## The next one line to be commented out for the fix
+    path("login/", LoginView.as_view(template_name="web_sms/login.html", next_page="/web_sms/")),
+    #path("login/", LoginView.as_view(template_name="web_sms/login_fix_flaw_4.html", next_page="/web_sms/")),
+    #path("web_sms/", include("django.contrib.auth.urls")),
+    ## End Fix Flaw 4
     path("register/", registerView),
 ]
