@@ -127,7 +127,7 @@ https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial
 Urls: \
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/urls.py#L15 (Line 15 in web_sms/urls.py)
 
-And optionally, to get rid of useless "questions and answers", i.e. ***secret_question*** and ***secret_answer*** in user registration procedure: in models.py, forms.py, and views.py. Not to mention the useless ***secret_question.html*** template. (All listed above optional things do not fix Flaw 4 and are rather cosmetical, that is why, to not overload the code, the commented-out fix is not provided for them.)
+And optionally, get rid of useless "questions and answers", i.e. ***secret_question*** and ***secret_answer*** in user registration procedure: in models.py, forms.py, and views.py. Not to mention the useless ***secret_question.html*** template. (All listed above optional things do not fix Flaw 4 and are rather cosmetical, that is why, to not overload the code, the commented-out fix is not provided for them.)
 
 Instead, use secure password recovery workflow. For example, default django password management workflow (password_reset views, forms and urls). \
 To do so, include the provided URLconf in django.contrib.auth.url in your own URLconf: \
