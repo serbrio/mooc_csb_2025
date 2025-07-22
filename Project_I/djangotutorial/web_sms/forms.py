@@ -2,7 +2,7 @@ from django import forms
 
 from django.contrib.auth import password_validation
 from django.contrib.auth.models import User
-
+from django.core import validators
 
 class RegisterForm(forms.Form):
     ## Flaw 2
@@ -10,7 +10,7 @@ class RegisterForm(forms.Form):
     email = forms.EmailField(widget=forms.EmailInput)
     password = forms.CharField(widget=forms.PasswordInput, max_length=30)
     secret_question = forms.CharField(max_length=100)
-    secret_answer = forms.CharField(widget=forms.TextInput, max_length=30)
+    secret_answer = forms.CharField(widget=forms.TextInput, max_length=30, validators=[validators.MinLengthValidator(5)])
     
     ## Fix Flaw 2
     """

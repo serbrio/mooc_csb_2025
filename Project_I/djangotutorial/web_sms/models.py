@@ -3,13 +3,13 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from django.utils import timezone
-
+from django.core import validators
 
 class Account(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	balance = models.IntegerField()
 	secret_question = models.CharField(max_length=100)
-	secret_answer = models.CharField(max_length=40) # max_length=40  for sha1
+	secret_answer = models.CharField(max_length=40, validators=[validators.MinLengthValidator(5)]) # max_length=40 for sha1
 	## Fix Flaw 2
 	"""
 	@property
