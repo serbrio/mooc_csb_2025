@@ -13,15 +13,15 @@ https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial
 **Broken access control** \
 There is no check in the application, if a user is authorized to delete a message.
 
-Though a user is not supposed to *see* messages addressed to other users, he can try to *delete* them.\
+Though a user is not supposed to *see* messages addressed to other users, he can try to *delete* them. \
 (Actually, there is a flaw in application which allows user to see messages addressed to other users. For conveniency, it is not discussed here, and it is mentioned and fixed in [alternative fix](#alternative-fix) for Flaw 3.)
 
 For example, after user ***test7*** has logged in and sent/deleted a message, he obtains [csfrmiddlewaretoken](screenshots/flaw-1-before-1.png), and in a cookie, [sessionid and csrftoken](screenshots/flaw-1-before-2.png), which he can use in POST requests to the app to attempt deletion.
 
 User ***test7*** has no received messages, as shown on the web page. \
 Here are all messages currently saved in the database: [messages](screenshots/flaw-1-before-4.png). \
-User ***test7*** has ***id=7***, which is not among the ***receiver_id***s. \ 
-For convenience, in this example, text of every message is descriptive: "from userN to userK".
+User ***test7*** has ***receiver_id=7***, which is not among the ***receiver_id***s. \
+(For convenience, in this example, text of every message is descriptive: "from userN to userK".)
 
 User is able to delete any message, even if it is not addressed to him, just guessing its ***id*** and providing previously obtained tokens and sessionid.
 
@@ -78,7 +78,12 @@ After the fix, weak passwords (or credential pairs) are not accepted with the ap
 - [test200/qwe](screenshots/flaw-2-after-4.png): too short, too common.
 
 ## References 
-[Identification and Authentication Failures](https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/) [password-management-in-django](https://docs.djangoproject.com/en/5.2/topics/auth/passwords/#password-management-in-django) [using-forms-to-validate-data](https://docs.djangoproject.com/en/5.2/ref/forms/api/#using-forms-to-validate-data) [validating-fields-with-clean](https://docs.djangoproject.com/en/5.2/ref/forms/validation/#validating-fields-with-clean) [Learn_web_development: Django](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Django) [attribute_similarity_authentication_fails](https://www.reddit.com/r/django/comments/8tyhhe/attribute_similarity_authentication_fails/)
+[Identification and Authentication Failures](https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/)\
+[password-management-in-django](https://docs.djangoproject.com/en/5.2/topics/auth/passwords/#password-management-in-django)\
+[using-forms-to-validate-data](https://docs.djangoproject.com/en/5.2/ref/forms/api/#using-forms-to-validate-data)\
+[validating-fields-with-clean](https://docs.djangoproject.com/en/5.2/ref/forms/validation/#validating-fields-with-clean)\
+[Learn_web_development: Django](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Django)\
+[attribute_similarity_authentication_fails](https://www.reddit.com/r/django/comments/8tyhhe/attribute_similarity_authentication_fails/)
 
 
 # FLAW 3:
@@ -109,7 +114,8 @@ https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial
 This fix prevents SQL injection [as well](screenshots/flaw-3-after-2.png). (By the way, it [remidies](screenshots/flaw-3-after-3.png) additionally a broken access control flaw in this piece of code: it checks if the user has access to read the message.)
 
 ## References 
-[Injection](https://owasp.org/Top10/A03_2021-Injection/) [how-to-use-placeholders-to-bind-values-in-sql-queries](https://docs.python.org/3/library/sqlite3.html#how-to-use-placeholders-to-bind-values-in-sql-queries)
+[Injection](https://owasp.org/Top10/A03_2021-Injection/)\
+[how-to-use-placeholders-to-bind-values-in-sql-queries](https://docs.python.org/3/library/sqlite3.html#how-to-use-placeholders-to-bind-values-in-sql-queries)
 
 
 # FLAW 4:
@@ -132,9 +138,11 @@ https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial
 
 And optionally, get rid of useless "questions and answers", i.e. ***secret_question*** and ***secret_answer*** in user registration procedure: in models.py, forms.py, and views.py. Not to mention the useless ***secret_question.html*** template. (All listed above optional things do not fix Flaw 4 and are rather cosmetical, that is why, to not overload the code, the commented-out fix is not provided for them.)
 
-Instead, use secure password recovery workflow. For example, default django password management workflow (password_reset views, forms and urls). \
+Instead, use secure password recovery workflow. For example, default django password management workflow (password_reset views, forms and urls). 
+
 To do so, include the provided URLconf in django.contrib.auth.url in your own URLconf: \
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/mysite/urls.py#L27 (Line 27 in mysite/urls.py) \
+https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/mysite/urls.py#L27 (Line 27 in mysite/urls.py) 
+
 For convenience, instead of original login template we use the fixed one: \
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/templates/web_sms/login_fix_flaw_4.html#L15 (Line 15 in templates/web_sms/login_fix_flaw_4.html)
 
@@ -146,7 +154,12 @@ After the fix, user can recover password using django password reset workflow:
 click [recover](screenshots/flaw-4-after-1.png), [provide email address](screenshots/flaw-4-after-2.png), get confirmation that [password reset is sent](screenshots/flaw-4-after-3.png), check provided email, follow the received link which opens [password change](screenshots/flaw-4-after-4.png) dialog, which resolves in [password reset confirmation](screenshots/flaw-4-after-5.png) and password change.
 
 ## References
-[Insecure Design](https://owasp.org/Top10/A04_2021-Insecure_Design/) [using-sessions-in-views](https://docs.djangoproject.com/en/5.2/topics/http/sessions/#using-sessions-in-views) [app-passwords for google account](https://myaccount.google.com/u/4/apppasswords) [smtp-backend](https://docs.djangoproject.com/en/5.2/topics/email/#smtp-backend) [django-reset-password-not-sending-email](https://stackoverflow.com/questions/20325729/django-reset-password-not-sending-email) [Authentication Views](https://docs.djangoproject.com/en/5.2/topics/auth/default/#module-django.contrib.auth.views)
+[Insecure Design](https://owasp.org/Top10/A04_2021-Insecure_Design/)\
+[using-sessions-in-views](https://docs.djangoproject.com/en/5.2/topics/http/sessions/#using-sessions-in-views)\
+[app-passwords for google account](https://myaccount.google.com/u/4/apppasswords)\
+[smtp-backend](https://docs.djangoproject.com/en/5.2/topics/email/#smtp-backend)\
+[django-reset-password-not-sending-email](https://stackoverflow.com/questions/20325729/django-reset-password-not-sending-email)\
+[Authentication Views](https://docs.djangoproject.com/en/5.2/topics/auth/default/#module-django.contrib.auth.views)
 
 
 # FLAW 5:
@@ -155,7 +168,7 @@ https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial
 **Cryptographic Failures** \
 Sensitive data (in this case, private messages) not encrypted at rest, allowing a SQL injection flaw to retrieve this data.
 
-As described in [Flaw 3](#flaw-3), [SQL injection](screenshots/flaw-3-before-3.png) can [reveal](screenshots/flaw-3-before-4.png) messages of other users. And as the data is not encrypted, attacker can gain access to the personal, and sensitive data.
+As described in [Flaw 3](#flaw-3), [SQL injection](screenshots/flaw-3-before-3.png) can [reveal](screenshots/flaw-3-before-4.png) messages of other users. And as the messages are not encrypted, attacker can gain access to the personal, and sensitive data.
 
 ## Fix
 Make sure, django-fernet-encrypted-fields package is installed: \
@@ -171,8 +184,9 @@ https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial
 
 After the fix, a SQL injection attack [will not reveal](screenshots/flaw-5-after-1.png) the sensitive data in plain text.
 
-But, because of the [Flaw 3](#flaw-3), i.e. because the DB API is used instead of the ORM, user will see his [messages](screenshots/flaw-5-after-2.png) [encrypted](screenshots/flaw-5-after-3.png) as well. \
-Use ORM to allow user to see [messages unencrypted](screenshots/flaw-5-after-4.png) - apply the [alternatnative fix](#alternative-fix) for Flaw 3.
+But, as the DB API is used instead of the ORM, user will see his [messages](screenshots/flaw-5-after-2.png) [encrypted](screenshots/flaw-5-after-3.png) as well. \
+Use ORM to allow user to see [messages decrypted](screenshots/flaw-5-after-4.png) - apply the [alternatnative fix](#alternative-fix) for Flaw 3.
 
 ## References
-[Cryptographic Failures](https://owasp.org/Top10/A02_2021-Cryptographic_Failures/) [django-fernet-encrypted-fields](https://pypi.org/project/django-fernet-encrypted-fields/)
+[Cryptographic Failures](https://owasp.org/Top10/A02_2021-Cryptographic_Failures/)\
+[django-fernet-encrypted-fields](https://pypi.org/project/django-fernet-encrypted-fields/)
