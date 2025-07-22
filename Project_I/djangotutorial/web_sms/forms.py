@@ -4,6 +4,7 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.models import User
 from django.core import validators
 
+
 class RegisterForm(forms.Form):
     ## Flaw 2
     username = forms.CharField(max_length=10)

@@ -48,7 +48,7 @@ def readMessageView(request, message_id):
     # http://127.0.0.1:8000/web_sms/' union all select text from web_sms_message;--/read_message/
     
     ## Fix Flaw 3
-    #sql_statement = "SELECT text FROM web_sms_message WHERE id=?"
+    ## sql_statement = "SELECT text FROM web_sms_message WHERE id=?"
     ## End Fix Flaw 3
    
     con = sqlite3.connect("db.sqlite3")
@@ -58,7 +58,7 @@ def readMessageView(request, message_id):
     ## The next line to be commented-out for the fix.
     res = cur.execute(sql_statement)
 
-    #res = cur.execute(sql_statement, (message_id,))
+    ## res = cur.execute(sql_statement, (message_id,))
     ## End Fix Flaw 3
 
     return HttpResponse(f"{res.fetchall()}")

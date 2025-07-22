@@ -145,3 +145,8 @@ EMAIL_HOST_USER = 'example@gmail.com'
 EMAIL_HOST_PASSWORD = 'app_password' # NB! Not account password. See: https://myaccount.google.com/u/4/apppasswords
 """
 ## End Fix Flaw 4
+
+
+## Fix Flaw 5
+## SALT_KEY = '0123456789abcdefghijklmnopqrstuvwxyz'
+## End Fix Flaw 5
