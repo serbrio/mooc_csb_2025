@@ -71,7 +71,7 @@ Make UserAttributeSimilarityValidator to check property ***password_validator_ta
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/mysite/settings.py#L94 (Line 94 in mysite/settings.py). \
 Optionally: fine tune the ***max_similarity*** option of the validator.
 
-After fix, weak passwords (or credential pairs) are not accepted with the appropriate error messages:
+After the fix, weak passwords (or credential pairs) are not accepted with the appropriate error messages:
 - [root/root](screenshots/flaw-2-after-1.png): too similar, too short, too common;
 - [password: 123123123](screenshots/flaw-2-after-2.png): too common, entirely numeric;
 - [test200/test123123](screenshots/flaw-2-after-3.png): too similar;
@@ -88,7 +88,10 @@ https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial
 Application does not prevent SQL injection attacks.
 
 To show to user one of the [messages](screenshots/flaw-3-before-1.png), application uses url ```<message_id>/read_message/```. Like [this](screenshots/flaw-3-before-2.png). \
-Parameter ***message_id*** in the request can be replaced with a [SQL injection](screenshots/flaw-3-before-3.png), which can lead to data leakage, for example, it can [reveal messages](screenshots/flaw-3-before-4.png) of other users.
+Parameter ***message_id*** in the request can be replaced with a SQL injection, for example:
+```' union all select text from web_sms_message;--```
+[Such SQL injection](screenshots/flaw-3-before-3.png) can lead to data leakage, for example, it can [reveal messages](screenshots/flaw-3-before-4.png) of other users. \
+(Messages are not encrypted, which is discussed in [Flaw 5](#flaw-5).)
 
 ## Fix
 When assembling the query, get rid of the string concatenation which makes the injection attack possible. Use DB-API's parameter substitution (placeholder ***?***) instead: \
@@ -97,7 +100,7 @@ https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial
 Accordingly, instead of the concatenated and vulnerable string, use parameter substituion when executing SQL query: \
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/views.py#L58 (Line 58 in views.py).
 
-After fix, application [prevents](screenshots/flaw-3-after-1.png) SQL injection attack.
+After the fix, application [prevents](screenshots/flaw-3-after-1.png) SQL injection attack.
 
 ## Alternative Fix
 Alternative to using DB-API's parameter substituion is using of Django ORM: \
@@ -139,7 +142,7 @@ Finally, to let django send you a one-time use link for password reset, set up s
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/mysite/settings.py#L138 (Line 138 in mysite/settings.py) \
 (In this example, smtp.gmail.com is used. To make it work, you have to set up a google account. See references.)
 
-After fix, user can recover password using django password reset workflow:
+After the fix, user can recover password using django password reset workflow:
 click [recover](screenshots/flaw-4-after-1.png), [provide email address](screenshots/flaw-4-after-2.png), get confirmation that [password reset is sent](screenshots/flaw-4-after-3.png), check provided email, follow the received link which opens [password change](screenshots/flaw-4-after-4.png) dialog, which resolves in [password reset confirmation](screenshots/flaw-4-after-5.png) and password change.
 
 ## References
@@ -147,7 +150,29 @@ click [recover](screenshots/flaw-4-after-1.png), [provide email address](screens
 
 
 # FLAW 5:
+https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/models.py#L26 (Line 26 in models.py)
+
+**Cryptographic Failures** \
+Sensitive data (in this case, private messages) not encrypted at rest, allowing a SQL injection flaw to retrieve this data.
+
+As described in [Flaw 3](#flaw-3), [SQL injection](screenshots/flaw-3-before-3.png) can [reveal](screenshots/flaw-3-before-4.png) messages of other users. And as the data is not encrypted, attacker can gain access to the personal, and sensitive data.
 
 ## Fix
+Make sure, django-fernet-encrypted-fields package is installed: \
+```pip install django-fernet-encrypted-fields```
+
+Make *Message* model encrypt text of messages before saving them to the database: \
+https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/models.py#L27 (Line 27 in models.py) \
+From now on, messages will be stored encrypted in the database.
+(When working with the ORM (i.e. retrieving the messages from the django.db.models), messages are retrieved automatically decrypted.)
+
+Set random **SALT_KEY**: \
+https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/mysite/settings.py#L150 (Line 150 in mysite/settings.py) \
+
+After the fix, a SQL injection attack [will not reveal](screenshots/flaw-5-after-1.png) the sensitive data in plain text.
+
+But, because of the [Flaw 3](#flaw-3), i.e. because the DB API is used instead of the ORM, user will see his [messages](screenshots/flaw-5-after-2.png) [encrypted](screenshots/flaw-5-after-3.png) as well. \
+Use ORM to allow user to see [messages unencrypted](screenshots/flaw-5-after-4.png) - apply the [alternatnative fix](#alternative-fix) for Flaw 3.
 
 ## References
+[Cryptographic Failures](https://owasp.org/Top10/A02_2021-Cryptographic_Failures/) [django-fernet-encrypted-fields](https://pypi.org/project/django-fernet-encrypted-fields/)
