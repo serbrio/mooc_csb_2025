@@ -7,7 +7,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.shortcuts import render, redirect
-from django.views.decorators.csrf import csrf_protect
 
 from .forms import RegisterForm, MessageForm
 
@@ -30,7 +29,7 @@ def homePageView(request):
 
 
 @login_required
-def showMessageView(request, message_id):
+def readMessageView(request, message_id):
     
     ## Alternative Fix Flaw 3
     """
@@ -117,7 +116,7 @@ def secretQuestionView(request, username):
                 request.session["username"] = username
                 return HttpResponseRedirect(reverse("web_sms:password_change", args=(username,)))
             else:
-                return HttpResponse("Not quite right!")
+                return render(request, 'web_sms/not_quite_right.html')
     else:
         request.session["got_secret_answer"] = False
         request.session["username"] = ''
@@ -127,7 +126,6 @@ def secretQuestionView(request, username):
                   {'form': form, 'secret_question': secret_question, 'username': username})
 
 
-@csrf_protect
 def passwordChangeView(request, username):
     # Check, if secret_answer has been received
     if request.session.get('got_secret_answer') != True:
@@ -172,7 +170,6 @@ def send_message(sender, receiver, message):
 
 
 @login_required
-@csrf_protect
 def sendView(request):
     if request.method == "POST":
         receiver = User.objects.get(username=request.POST.get('to'))
@@ -200,7 +197,6 @@ def delete_message(message_id, user):
 
 
 @login_required
-@csrf_protect
 def deleteView(request):
     if request.method == "POST":
         message_id = request.POST.get('message_id')

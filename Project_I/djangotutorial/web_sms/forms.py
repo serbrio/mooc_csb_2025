@@ -28,7 +28,7 @@ class RegisterForm(forms.Form):
 
 
 class MessageForm(forms.Form):
-    message = forms.CharField(widget=forms.Textarea, max_length=200)
+    message = forms.CharField(widget=forms.Textarea, max_length=500)
 
 
 ## Fix Flaw 4

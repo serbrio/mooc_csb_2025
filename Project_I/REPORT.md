@@ -13,8 +13,8 @@ https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial
 **Broken access control** \
 There is no check in the application, if a user is authorized to delete a message.
 
-Though a user can not see messages addressed to other users, 
-he can try to delete them.
+Though a user is not supposed to *see* messages addressed to other users, he can try to *delete* them.\
+(Actually, there is a flaw in application which allows user to see messages addressed to other users. For conveniency, it is not discussed here, and it is mentioned and fixed in [alternative fix](#alternative-fix) for Flaw 3.)
 
 For example, after user ***test7*** has logged in and sent/deleted a message, he obtains [csfrmiddlewaretoken](screenshots/flaw-1-before-1.png), and in a cookie, [sessionid and csrftoken](screenshots/flaw-1-before-2.png), which he can use in POST requests to the app to attempt deletion.
 
@@ -84,7 +84,7 @@ After fix, weak passwords (or credential pairs) are not accepted with the approp
 # FLAW 3:
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/views.py#L46 (Line 46 in views.py)
 
-**Injection** \
+**Injection (SQL)** \
 Application does not prevent SQL injection attacks.
 
 To show to user one of the [messages](screenshots/flaw-3-before-1.png), application uses url ```<message_id>/read_message/```. Like [this](screenshots/flaw-3-before-2.png). \
