@@ -41,7 +41,7 @@ Attempt to delete message with ***id=23***:
 ```
 curl -X POST http://127.0.0.1:8000/web_sms/delete_message/ -H "Cookie: csrftoken=F6OFlgxFYtrLu5GQGph2x910uIDR9xvN; sessionid=2wiig7eafg80eps326e8ngalvc6npdth" -d "csrfmiddlewaretoken=InINKoAEPdOJH5JUJJOyia9cYbZ5W3HFdjmiVuX9Dw5k10fAfYVqF902iJsMVq2i&message_id=23"
 ```
-Attempt failed: [message is not deleted](screenshots/flaw-1-after-2.png).
+Attempt fails: [message is not deleted](screenshots/flaw-1-after-2.png).
 
 ## References 
 [A Broken Access Control](https://owasp.org/Top10/A01_2021-Broken_Access_Control/)
@@ -126,7 +126,7 @@ https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial
 **Insecure design** \
 Password recovery workflow includes "questions and answers", which can not be trusted as evidence of identity because more than one person can know the answers.
 
-User can [recover](screenshots/flaw-4-before-1.png) his password by providing [username](screenshots/flaw-4-before-2.png) and a matching [secret answer](screenshots/flaw-4-before-3.png), and therefore submitting the [password change](screenshots/flaw-4-before-4.png) form, which resets the user's password. (The "question and answer" pair has been saved during user registration).
+Attacker can [reset](screenshots/flaw-4-before-1.png) user's password by providing a matching [username](screenshots/flaw-4-before-2.png) and [secret answer](screenshots/flaw-4-before-3.png) pair, and therefore submitting the [password change](screenshots/flaw-4-before-4.png) form, which resets the user's password. (The "question and answer" pair has been saved during the user registration).
 
 ## Fix
 Get rid of the "questions and answers" logic completely. \
@@ -152,8 +152,10 @@ Finally, to let django send you a one-time use link for password reset, set up s
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/mysite/settings.py#L138 (Line 138 in mysite/settings.py) \
 (In this example, smtp.gmail.com is used. To make it work, you have to set up a google account. See references.)
 
-After the fix, user can recover password using django password reset workflow:
-click [recover](screenshots/flaw-4-after-1.png), [provide existing email address](screenshots/flaw-4-after-2.png), get confirmation that [password reset link is sent](screenshots/flaw-4-after-3.png), check provided email, follow the received link which opens [password change dialog](screenshots/flaw-4-after-4.png), which resolves in [password reset confirmation](screenshots/flaw-4-after-5.png) and password change.
+After the fix, there is no insecure "secret question and secret answer" logic left in the application. Instead, password can be reset in django password reset workflow via one-time password reset link, which is sent to the user's email.
+
+A user's password reset workflow:
+click [recover](screenshots/flaw-4-after-1.png), [provide email address](screenshots/flaw-4-after-2.png), get confirmation that [password reset link is sent](screenshots/flaw-4-after-3.png), check email, follow the received link which opens [password change dialog](screenshots/flaw-4-after-4.png), which resolves in [password reset confirmation](screenshots/flaw-4-after-5.png) and password change.
 
 ## References
 [Insecure Design](https://owasp.org/Top10/A04_2021-Insecure_Design/)\
@@ -168,12 +170,13 @@ click [recover](screenshots/flaw-4-after-1.png), [provide existing email address
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/models.py#L26 (Line 26 in models.py)
 
 **Cryptographic Failures** \
-Sensitive data (in this case, private messages) not encrypted at rest, allowing a SQL injection flaw to retrieve this data.
+Sensitive data (in this case, private messages) not encrypted at rest, allowing an attacker to retrieve this data using, for examle, SQL injection flaws.
 
-As described in [Flaw 3](#flaw-3), [SQL injection](screenshots/flaw-3-before-3.png) can [reveal](screenshots/flaw-3-before-4.png) messages of other users. And as the messages are not encrypted, attacker can gain access to the personal and sensitive data.
+As described in [Flaw 3](#flaw-3), [SQL injection](screenshots/flaw-3-before-3.png) can [reveal](screenshots/flaw-3-before-4.png) messages of other users. And as the messages are not encrypted, attacker can gain access to the personal and sensitive data in these messages.
 
 ## Fix
-To encrypt the fields in django Models, it is convenient to use the django-fernet-encrypted-fields package. If not installed yet: \
+To encrypt the fields in django Models, it is convenient to use the django-fernet-encrypted-fields package. \
+If not installed yet: \
 ```pip install django-fernet-encrypted-fields```
 
 Make *Message* model encrypt text of messages before saving them to the database: \
@@ -186,8 +189,8 @@ https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial
 
 After the fix, a SQL injection attack will not reveal the sensitive data in plain text, but [encrypted](screenshots/flaw-5-after-1.png).
 
-Side effect of the fix: to show a message to a user, the application uses the DB API instead of the ORM, so user will see his [messages](screenshots/flaw-5-after-2.png) [encrypted](screenshots/flaw-5-after-3.png). \
-Use ORM to allow user to see [messages decrypted](screenshots/flaw-5-after-4.png) - apply the [alternatnative fix](#alternative-fix) for Flaw 3.
+Side effect of the fix: to show a message to a user, the application uses the DB-API instead of the ORM, so user will see his [messages](screenshots/flaw-5-after-2.png) [encrypted](screenshots/flaw-5-after-3.png). \
+Use ORM to allow user to see his messages [decrypted](screenshots/flaw-5-after-4.png) - apply the [alternatnative fix](#alternative-fix) for Flaw 3.
 
 ## References
 [Cryptographic Failures](https://owasp.org/Top10/A02_2021-Cryptographic_Failures/)\
