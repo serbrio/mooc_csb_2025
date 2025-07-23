@@ -1,6 +1,14 @@
 LINK: https://github.com/serbrio/mooc_csb_2025.git
 
+## Instructions
+Install required packages:
 ```pip install -r requirements.txt```
+
+Prepare DB:
+```python manage.py migrate```
+
+Start the server:
+```python manage.py runserver```
 
 ## Short description of the web application
 After user have registered and logged in, app allows user:
@@ -8,6 +16,7 @@ After user have registered and logged in, app allows user:
 - to view messages received by the user
 - to delete received messages.
 
+To prepare for security flaws investigation, register at least a pair of users, and send several messages.
 
 # FLAW 1:
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/views.py#L185 (Line 185 in views.py)
