@@ -20,7 +20,7 @@ To prepare for security flaws investigation, register at least a pair of users, 
 Web app page: http://127.0.0.1/web_sms/.
 
 # FLAW 1:
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/views.py#L185 (Line 185 in views.py)
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/web_sms/views.py#L185 (Line 185 in views.py)
 
 **Broken access control** \
 There is no check in the application, if a user is authorized to delete a message.
@@ -45,7 +45,7 @@ As result, [message is deleted](screenshots/flaw-1-before-6.png).
 
 ## Fix
 Add check if the user who requested deletion has access to the message, i.e. if the user and the receiver of the message are the same person: \
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/views.py#L188 (Line 188 in views.py)
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/web_sms/views.py#L188 (Line 188 in views.py)
 
 Attempt to delete message with ***id=23***:
 ```
@@ -58,7 +58,7 @@ Attempt fails: [message is not deleted](screenshots/flaw-1-after-2.png).
 
 
 # FLAW 2:
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/forms.py#L9 (Line 9 in forms.py)
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/web_sms/forms.py#L9 (Line 9 in forms.py)
 
 **Identification and Authentication Failures** \
 Application permits weak, or well-known passwords.
@@ -74,13 +74,13 @@ In application, the following password validators are activated by default:
 - NumericPasswordValidator
 
 To fix the flaw, add password validation to the registration form, i.e. reimplement the clean() method of the form by utilizing ***password_validation*** from the django.contrib.auth: \
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/forms.py#L16 (Line 16 in forms.py).
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/web_sms/forms.py#L16 (Line 16 in forms.py).
 
 As there is the custom "Account" model in the application, to make password validation work, add property ***password_validator_target*** to the model, which will be checked by validator: \
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/models.py#L16 (Line 16 in models.py).
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/web_sms/models.py#L16 (Line 16 in models.py).
 
 In settings, make UserAttributeSimilarityValidator check property ***password_validator_target*** of the "Account" model: \
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/mysite/settings.py#L94 (Line 94 in mysite/settings.py). \
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/mysite/settings.py#L94 (Line 94 in mysite/settings.py). \
 Optionally: fine tune the ***max_similarity*** option of the validator.
 
 After the fix, weak passwords (or credential pairs) are not accepted with the appropriate error messages:
@@ -99,7 +99,7 @@ After the fix, weak passwords (or credential pairs) are not accepted with the ap
 
 
 # FLAW 3:
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/views.py#L45 (Line 45 in views.py)
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/web_sms/views.py#L45 (Line 45 in views.py)
 
 **Injection (SQL)** \
 Application does not prevent SQL injection attacks.
@@ -112,16 +112,16 @@ Parameter ***message_id*** in the request can be replaced with a SQL injection, 
 
 ## Fix
 When assembling the query, get rid of the string concatenation which makes the injection attack possible. Use DB-API's parameter substitution (placeholder ***?***) instead: \
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/views.py#L50 (Line 50 in views.py).
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/web_sms/views.py#L50 (Line 50 in views.py).
 
 Accordingly, instead of the concatenated and vulnerable string, use parameter substituion when executing SQL query: \
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/views.py#L57 (Line 57 in views.py).
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/web_sms/views.py#L57 (Line 57 in views.py).
 
 After the fix, application [prevents](screenshots/flaw-3-after-1.png) SQL injection attack.
 
 ## Alternative Fix
 Alternative to using DB-API's parameter substituion is using of Django ORM: \
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/views.py#L34 (Line 34 in views.py).
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/web_sms/views.py#L34 (Line 34 in views.py).
 
 This fix prevents SQL injection [as well](screenshots/flaw-3-after-2.png). (By the way, additionally, it [remidies](screenshots/flaw-3-after-3.png) a broken access control flaw in this piece of code: it checks if the user has access to read the message.)
 
@@ -131,7 +131,7 @@ This fix prevents SQL injection [as well](screenshots/flaw-3-after-2.png). (By t
 
 
 # FLAW 4:
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/views.py#L88 (Line 88 in views.py)
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/web_sms/views.py#L88 (Line 88 in views.py)
 
 **Insecure design** \
 Password recovery workflow includes "questions and answers", which can not be trusted as evidence of identity because more than one person can know the answers.
@@ -141,25 +141,25 @@ Attacker can [reset](screenshots/flaw-4-before-1.png) user's password by providi
 ## Fix
 Get rid of the "questions and answers" logic completely. \
 Views: \
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/views.py#L89 (Line 89 in views.py) \
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/views.py#L13 (Line 13 in views.py) \
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/web_sms/views.py#L89 (Line 89 in views.py) \
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/web_sms/views.py#L13 (Line 13 in views.py) \
 Forms: \
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/forms.py#L35 (Line 35 in forms.py) \
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/web_sms/forms.py#L35 (Line 35 in forms.py) \
 Urls: \
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/urls.py#L15 (Line 15 in web_sms/urls.py)
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/web_sms/urls.py#L15 (Line 15 in web_sms/urls.py)
 
 And optionally, get rid of useless "questions and answers", i.e. ***secret_question*** and ***secret_answer*** in user registration procedure: in models.py, forms.py, and views.py. Not to mention the useless ***secret_question.html*** template. (All listed optional things do not fix Flaw 4 and are rather cosmetical, that is why, to not overload the code, the fix is not provided for them.)
 
 Instead, use secure password recovery workflow. For example, default django password management workflow (password_reset views, forms and urls). 
 
 To do so, include the provided URLconf in django.contrib.auth.url in application's URLconf: \
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/mysite/urls.py#L27 (Line 27 in mysite/urls.py) 
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/mysite/urls.py#L27 (Line 27 in mysite/urls.py) 
 
 For convenience, instead of original login template, use the fixed one: \
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/templates/web_sms/login_fix_flaw_4.html#L15 (Line 15 in templates/web_sms/login_fix_flaw_4.html)
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/web_sms/templates/web_sms/login_fix_flaw_4.html#L15 (Line 15 in templates/web_sms/login_fix_flaw_4.html)
 
 Finally, to let django send you a one-time use link for password reset, set up sending emails: \
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/mysite/settings.py#L138 (Line 138 in mysite/settings.py) \
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/mysite/settings.py#L138 (Line 138 in mysite/settings.py) \
 (In this example, smtp.gmail.com is used. To make it work, you have to set up a google account. See references.)
 
 After the fix, there is no insecure "secret question and secret answer" logic left in the application. Instead, password can be reset in django password reset workflow via one-time password reset link, which is sent to the user's email.
@@ -177,7 +177,7 @@ click [recover](screenshots/flaw-4-after-1.png), [provide email address](screens
 
 
 # FLAW 5:
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/models.py#L26 (Line 26 in models.py)
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/web_sms/models.py#L26 (Line 26 in models.py)
 
 **Cryptographic Failures** \
 Sensitive data (in this case, private messages) not encrypted at rest, allowing an attacker to retrieve this data using, for examle, SQL injection flaws.
@@ -190,12 +190,12 @@ If not installed yet: \
 ```pip install django-fernet-encrypted-fields```
 
 Make *Message* model encrypt text of messages before saving them to the database: \
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/models.py#L27 (Line 27 in models.py) \
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/web_sms/models.py#L27 (Line 27 in models.py) \
 From now on, messages will be stored encrypted in the database.
 (When working with the ORM (i.e. retrieving the messages from the django.db.models), messages are retrieved automatically decrypted. But in the DB they are stored encrypted.)
 
 Set random **SALT_KEY**: \
-https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/mysite/settings.py#L150 (Line 150 in mysite/settings.py) \
+https://github.com/serbrio/mooc_csb_2025/blob/master/Project_I/djangotutorial/mysite/settings.py#L150 (Line 150 in mysite/settings.py) \
 
 After the fix, a SQL injection attack will not reveal the sensitive data in plain text, but [encrypted](screenshots/flaw-5-after-1.png).
 
