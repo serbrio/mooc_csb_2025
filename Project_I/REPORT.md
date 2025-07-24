@@ -10,13 +10,14 @@ Prepare DB:
 Start the server:
 ```python manage.py runserver```
 
-## Short description of the web application
+## Short description of web application
 After user have registered and logged in, app allows user:
 - to send messages to other users
 - to view messages received by the user
 - to delete received messages.
 
 To prepare for security flaws investigation, register at least a pair of users, and send several messages.
+Web app page: http://127.0.0.1/web_sms/.
 
 # FLAW 1:
 https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial/web_sms/views.py#L185 (Line 185 in views.py)
@@ -25,7 +26,7 @@ https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial
 There is no check in the application, if a user is authorized to delete a message.
 
 Though a user is not supposed to *see* messages addressed to other users, he can try to *delete* them. \
-(Actually, there is a flaw in application which allows user to see messages addressed to other users. For conveniency, it is not discussed here, and it is mentioned and fixed in [alternative fix](#alternative-fix) for Flaw 3.)
+(Actually, there is another flaw of the same type in application which allows user to see messages addressed to other users. For conveniency, it is not discussed here but mentioned and fixed in [alternative fix](#alternative-fix) for Flaw 3.)
 
 For example, after user ***test7*** has logged in and sent/deleted a message, he obtains [csfrmiddlewaretoken](screenshots/flaw-1-before-1.png), and in a cookie, [sessionid and csrftoken](screenshots/flaw-1-before-2.png), which he can use in POST requests to the app to attempt deletion.
 
@@ -181,7 +182,7 @@ https://github.com/serbrio/mooc_csb_2025/blob/project_I/Project_I/djangotutorial
 **Cryptographic Failures** \
 Sensitive data (in this case, private messages) not encrypted at rest, allowing an attacker to retrieve this data using, for examle, SQL injection flaws.
 
-As described in [Flaw 3](#flaw-3), [SQL injection](screenshots/flaw-3-before-3.png) can [reveal](screenshots/flaw-3-before-4.png) messages of other users. And as the messages are not encrypted, attacker can gain access to the personal and sensitive data in these messages.
+As described in [Flaw 3](#flaw-3), [SQL injection](screenshots/flaw-3-before-3.png) can [reveal](screenshots/flaw-3-before-4.png) messages of users. And as the messages are not encrypted, attacker can gain access to the personal and sensitive data in these messages.
 
 ## Fix
 To encrypt the fields in django Models, it is convenient to use the django-fernet-encrypted-fields package. \
